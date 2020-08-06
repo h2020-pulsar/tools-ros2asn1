@@ -46,7 +46,6 @@ def process_all_messages(out_dir):
         print('Creating ASN.1 types for {}'.format(pkg))
         
         pkg_obj = RosAsn1Generator(rospack, pkg)
-
         # ASN.1 types "pkg.asn"
         asn_txt = asn_template.render(pkg=pkg_obj)
 
