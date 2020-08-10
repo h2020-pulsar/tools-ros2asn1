@@ -6,7 +6,7 @@ from Asn1Generator import Asn1Generator
 import rosmsg
 import re
 import importlib
-
+import sys
 class RosAsn1Generator(Asn1Generator):
     '''
     Class to generate the ASN.1 files for a ROS package. Intended for
@@ -40,15 +40,14 @@ class RosAsn1Generator(Asn1Generator):
         # Remove prefix 'package_name/'
         msgs = [msg.replace(self.pkg_name + '/', '', 1) for msg in msgs]
         srvs = [srv.replace(self.pkg_name + '/', '', 1) for srv in srvs]
+
+        self.has_msg = ( len(msgs) > 0) 
+        self.has_service = ( len(srvs) > 0)
+
         srv_list = []
         for elm in srvs:
             srv_list.append(elm + "Request")
             srv_list.append(elm + "Response")
-        print("DEBUG", srv_list)
-        if not srvs:
-            self.has_service = False
-        else:
-            self.has_service = True
         return msgs + srv_list
     
     def package_module(self, msgType):
@@ -57,23 +56,24 @@ class RosAsn1Generator(Asn1Generator):
         msg_module = None
         try:
             msg_module = importlib.import_module(msg_modname)
-            return msg_module
         except ImportError as e:
-            sys.stderr.write('Couldn\'t load package ' + msg_modname + '\n')
+            sys.stderr.write('ERROR : Couldn\'t load package ' + msg_modname + '\n')
+            print("RosAsn1Generator.py - line {}".format(sys.exc_info()[-1].tb_lineno))
+            raise
+        return msg_module
 
     def message_info(self, msg):
         '''Returns a dictionary with information about a message type'''
-        try:
+        if self.has_msg:
             msg_module = self.package_module("msg")
-            if msg in msg_module.__dict__.keys():
+            if  msg_module is not None and msg in msg_module.__dict__.keys():
                 return msg_module.__dict__.get(msg).__dict__
-            elif self.has_service:
-                srv_module = self.package_module("srv")
-                return srv_module.__dict__.get(msg).__dict__
-            else:
-                print('Couldn\'t find message ' + msg + '\n')
-        except KeyError:
-            sys.stderr.write('Couldn\'t find message ' + msg + '\n')
+        if self.has_service:
+            srv_module = self.package_module("srv")
+            if  srv_module is not None and msg in srv_module.__dict__.keys():
+                return srv_module.__dict__.get(msg).__dict__  
+        print('Couldn\'t find message ' + msg + '\n')
+        raise
 
     def full_text(self, msg):
         '''Returns the full text of the ROS message definition'''

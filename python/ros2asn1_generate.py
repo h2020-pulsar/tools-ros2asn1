@@ -11,8 +11,8 @@ from ros2asn1 import ros2asn1
 
 
 def main():
-    outdir = parse_args()
-    ros2asn1.process_all_messages(outdir)
+    outdir,packages = parse_args()
+    ros2asn1.process_all_messages(outdir,packages)
 
 
 def parse_args():
@@ -22,6 +22,7 @@ def parse_args():
     '''
     inputfile = ''
     outdir_asn = ''
+    packages=[]
     try:
         args = sys.argv[1:]
         optlist, args = getopt.gnu_getopt(
@@ -36,21 +37,23 @@ def parse_args():
         if opt == '-h':
             usage()
             sys.exit(0)
-
     if len(args) == 1:
         outdir_asn = args[0]
+    elif len(args) > 1:
+        outdir_asn = args[0]
+        packages = args[1:]
     else:
         usage()
         sys.exit(errno.EINVAL)
 
-    return outdir_asn
+    return outdir_asn,packages
 
 
 def usage():
     '''
     Print command-line usage
     '''
-    print('Usage: {} <outdir-asn>'.format(sys.argv[0]))
+    print('Usage: {} <outdir-asn> [<package1> <package2> ... <packageN> ]'.format(sys.argv[0]))
 
 
 if __name__ == "__main__":
