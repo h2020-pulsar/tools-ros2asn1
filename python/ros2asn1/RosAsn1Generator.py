@@ -41,8 +41,8 @@ class RosAsn1Generator(Asn1Generator):
         msgs = [msg.replace(self.pkg_name + '/', '', 1) for msg in msgs]
         srvs = [srv.replace(self.pkg_name + '/', '', 1) for srv in srvs]
 
-        self.has_msg = ( len(msgs) > 0) 
-        self.has_service = ( len(srvs) > 0)
+        self.has_msg = (len(msgs) > 0) 
+        self.has_service = (len(srvs) > 0)
 
         srv_list = []
         for elm in srvs:
