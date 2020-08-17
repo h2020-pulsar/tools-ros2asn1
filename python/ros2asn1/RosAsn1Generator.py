@@ -157,8 +157,7 @@ class RosAsn1Generator(Asn1Generator):
     def required_packages(self):
         '''Returns the list of packages needed for all the messages and slots'''
         required = []
-        msgs = self.messages()
-        for msg in msgs:
+        for msg in self.messages():
             for typ in self.slot_types(msg):
                 pkg,_,_ = self.split_type(typ)
                 if pkg and pkg != self.pkg_name:

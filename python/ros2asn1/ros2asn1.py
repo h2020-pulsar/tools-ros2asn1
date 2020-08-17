@@ -52,7 +52,6 @@ def process_all_messages(out_dir,packages_to_process=[]):
             if pkg not in existing_packages:
                 print("process_all_messages : input package {} does not exist".format(pkg))
                 sys.exit(-1)
-                return false
     #if no package specified, process all of them
     else:
         print("Processing all packages")
